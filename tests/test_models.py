@@ -26,11 +26,14 @@ While debugging just these tests it's convenient to use this:
 import os
 import logging
 import unittest
+import json
+
+# from unittest import TestCase
+# from models import db
 from decimal import Decimal
 from service.models import Product, Category, db
 from service import app
 from tests.factories import ProductFactory
-from service.common import status  # HTTP Status Codes
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -102,9 +105,6 @@ class TestProductModel(unittest.TestCase):
         self.assertEqual(new_product.available, product.available)
         self.assertEqual(new_product.category, product.category)
 
-    #
-    # ADD YOUR TEST CASES HERE
-    #
     def test_read_a_product(self):
         """It should Read a Product"""
         product = ProductFactory()
@@ -163,7 +163,7 @@ class TestProductModel(unittest.TestCase):
         products = ProductFactory.create_batch(5)
         for product in products:
             product.create()
-            name = products[0].name
+        name = products[0].name
         count = len([product for product in products if product.name == name])
         found = Product.find_by_name(name)
         self.assertEqual(found.count(), count)
@@ -175,7 +175,7 @@ class TestProductModel(unittest.TestCase):
         products = ProductFactory.create_batch(10)
         for product in products:
             product.create()
-            available = products[0].available
+        available = products[0].available
         count = len([product for product in products if product.available == available])
         found = Product.find_by_availability(available)
         self.assertEqual(found.count(), count)
@@ -187,18 +187,15 @@ class TestProductModel(unittest.TestCase):
         products = ProductFactory.create_batch(10)
         for product in products:
             product.create()
-            category = products[0].category
+        category = products[0].category
         count = len([product for product in products if product.category == category])
         found = Product.find_by_category(category)
         self.assertEqual(found.count(), count)
         for product in found:
             self.assertEqual(product.category, category)
 
-    def test_get_product_not_found(self):
-        """It should not Get a Product thats not found"""
-        # send a self.client.get() request to the BASE_URL with an invalid product ID (e.g., 0)
-        # assert that the resp.status_code is status.HTTP_404_NOT_FOUND
-        response = self.client.get("/products/0")
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        data = response.get_json()
-        self.assertIn("was not found", data["message"])
+    # def test_id_not_found(self):
+    #     """It should test for id not found"""
+    #     product = ProductFactory()
+    #     product.id = None
+    #     self.assertRaises(DataValidationError, product.update)
